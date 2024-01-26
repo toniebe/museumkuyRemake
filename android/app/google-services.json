@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "900535117114",
+    "project_id": "museumkuy-692b9",
+    "storage_bucket": "museumkuy-692b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900535117114:android:3d026358cd32a2c58fdc03",
+        "android_client_info": {
+          "package_name": "com.museumkuy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0qO2F_yrsTgHL_fguK-dLhYTUc0zrd6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
