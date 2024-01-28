@@ -10,6 +10,7 @@ import TypeMuseum from '../screens/TypeMuseum';
 import DetailTypeMuseum from '../screens/DetailTypeMuseum';
 import Province from '../screens/DetailRegion/Province';
 import City from '../screens/DetailRegion/City';
+import DetailMuseum from '../screens/DetailMuseum';
 
 const Stack = createNativeStackNavigator();
 const Router = () => {
@@ -88,6 +89,13 @@ const Router = () => {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
+          }}
+        />
+        <Stack.Screen
+          name="DetailMuseum"
+          component={DetailMuseum}
+          options={{
+            headerShown: false,
           }}
         />
       </Stack.Navigator>
