@@ -22,9 +22,10 @@ const MuseumHome = ({
   nama,
   kota,
   rate,
+  ...nativeProps
 }: MuseumHomeProps & TouchableOpacityProps) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} {...nativeProps}>
       <View style={styles.imageContainer}>
         <Image
           source={{uri: image}}

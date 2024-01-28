@@ -1,9 +1,11 @@
 import {
   FlatList,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -17,6 +19,8 @@ import DividerTitle from '../../components/DividerTitle';
 import Kota from './components/Kota';
 import JenisMuseum from './components/JenisMuseum';
 import MuseumHome from './components/MuseumHome';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({navigation}: any) => {
   const [dataSlider, setDataSlider] = useState<any>([]);
@@ -49,11 +53,32 @@ const Home = ({navigation}: any) => {
     getDataSlider();
   }, []);
 
+  const handleLogout = async () => {
+    auth()
+      .signOut()
+      .then(() => {
+        AsyncStorage.removeItem('user');
+        navigation.replace('Login');
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView style={{flex: 1}}>
         <View style={styles.sliderContainer}>
-          <Text style={styles.titleSlider}>Museum Terpopuler</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <Text style={styles.titleSlider}>Museum Terpopuler</Text>
+            <TouchableOpacity onPress={handleLogout}>
+              <Image
+                source={require('../../assets/icons/logout.png')}
+                style={{width: 25, height: 25, resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
           <Slider data={dataSlider} navigation={navigation} />
         </View>
         <View style={styles.jelajahiContainer}>
@@ -109,7 +134,11 @@ const Home = ({navigation}: any) => {
         <View style={styles.jenisMuseumContainer}>
           <DividerTitle
             title="Rekomendasi Museum"
-            onPress={() => navigation.navigate('ListMuseum')}
+            onPress={() =>
+              navigation.navigate('DetailTypeMuseum', {
+                museumName: 'Museum Populer',
+              })
+            }
           />
           <FlatList
             data={dataSlider}
@@ -119,7 +148,14 @@ const Home = ({navigation}: any) => {
                 kota={item.title}
                 nama={item.desc}
                 rate={item.rate}
-                onPress={() => navigation.navigate('DetailMuseum')}
+                onPress={() =>
+                  navigation.navigate('DetailMuseum', {
+                    museumKey: item.key,
+                    museumPlace: item.title,
+                    museumImage: item.image_url,
+                    museumName: item.desc,
+                  })
+                }
               />
             )}
             contentContainerStyle={{
