@@ -2,6 +2,7 @@
 import {
   Image,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -58,7 +59,7 @@ const Login = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
+      <ScrollView style={styles.contentContainer}>
         <View style={{flex: 1, alignItems: 'center'}}>
           <Image source={MuseumKuyImage} style={styles.image} />
         </View>
@@ -103,7 +104,7 @@ const Login = ({navigation}: any) => {
           title={titleModal}
           titleButton="OK"
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
