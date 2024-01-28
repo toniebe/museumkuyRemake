@@ -12,18 +12,57 @@ import {color} from '../../assets/style/colors';
 import {MuseumKuyImage} from '../../assets/images';
 import Textinput from '../../components/Textinput';
 import Button from '../../components/Button';
+import ModalCustom from '../../components/Modal';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({navigation}: any) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [titleModal, setTitleModal] = useState<string>('');
+
+  const checkValue = (email: string, password: string) => {
+    if (email !== '' && password !== '') {
+      return true;
+    }
+    return false;
+  };
+  const handleUserLogin = () => {
+    if (checkValue(email, password)) {
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(data => {
+          let user = JSON.stringify(data.user);
+          AsyncStorage.setItem('user', user);
+          navigation.replace('Home');
+        })
+        .catch(err => {
+          console.error(err);
+          setIsModalVisible(true);
+          if (err.code === 'auth/user-not-found') {
+            setTitleModal(
+              'Anda belum terdaftar silahkan mendaftar terlebih dahulu',
+            );
+          } else if (err.code === 'auth/wrong-password') {
+            setTitleModal('Email dan password tidak sesuai');
+          } else {
+            setTitleModal('ada kesalahan pada login');
+          }
+        });
+    } else {
+      setIsModalVisible(true);
+      setTitleModal('Harap isi lengkap email dan password');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
-        <View style={{flex: 0.5, alignItems: 'center'}}>
+        <View style={{flex: 1, alignItems: 'center'}}>
           <Image source={MuseumKuyImage} style={styles.image} />
         </View>
-        <View style={{justifyContent: 'center', flex: 0.5}}>
+        <View style={{justifyContent: 'center', flex: 1}}>
           <Textinput
             placeholder="Email"
             value={email}
@@ -39,7 +78,12 @@ const Login = ({navigation}: any) => {
           />
         </View>
         <View style={{flex: 0.5, marginTop: 20}}>
-          <Button type="primary" size="large" title="SIGN IN" />
+          <Button
+            type="primary"
+            size="large"
+            title="SIGN IN"
+            onPress={handleUserLogin}
+          />
           <TouchableOpacity onPress={() => navigation.replace('Registration')}>
             <Text
               style={{
@@ -52,6 +96,13 @@ const Login = ({navigation}: any) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <ModalCustom
+          children={<View />}
+          actionOnPress={() => setIsModalVisible(false)}
+          isModalVisible={isModalVisible}
+          title={titleModal}
+          titleButton="OK"
+        />
       </View>
     </SafeAreaView>
   );

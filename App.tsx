@@ -1,11 +1,13 @@
-import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import Router from './src/router';
+import AppProvider from './src/utils/Context/AppProvider';
 
 const App = () => {
-  return <Router />;
+  return (
+    <AppProvider>
+      <Router />
+    </AppProvider>
+  );
 };
 
 export default App;
-
-const styles = StyleSheet.create({});

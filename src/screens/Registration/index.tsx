@@ -2,6 +2,7 @@
 import {
   Image,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,19 +13,71 @@ import {MuseumKuyImage} from '../../assets/images';
 import {color} from '../../assets/style/colors';
 import Textinput from '../../components/Textinput';
 import Button from '../../components/Button';
+import ModalCustom from '../../components/Modal';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Registration = ({navigation}: any) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordConfirm, setPasswordConfirm] = useState<string>('');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [titleModal, setTitleModal] = useState<string>('');
 
+  const checkValue = (
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => {
+    if (email !== '' && password !== '') {
+      if (password === confirmPassword) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  };
+  const handleOnSubmit = () => {
+    if (checkValue(email, password, passwordConfirm)) {
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(data => {
+          console.log('ini data ->', data);
+          setTitleModal('Registrasi Telah Berhasil');
+          setIsModalVisible(true);
+          let user = JSON.stringify(data.user);
+          AsyncStorage.setItem('user', user);
+          setEmail('');
+          setPassword('');
+          navigation.replace('Login');
+        })
+        .catch(error => {
+          console.error(error);
+          if (error.code === 'auth/email-already-in-use') {
+            setIsModalVisible(true);
+            setTitleModal('Email sudah digunakan');
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            setIsModalVisible(true);
+            setTitleModal('Email atau password tidak sesuai');
+          }
+        });
+    } else {
+      setIsModalVisible(true);
+      setTitleModal('Harap Lengkapi Email dan Password');
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={styles.contentContainer}>
         <View style={{flex: 0.5, alignItems: 'center'}}>
           <Image source={MuseumKuyImage} style={styles.image} />
         </View>
-        <View style={{justifyContent: 'space-around', flex: 1}}>
+        <View style={{justifyContent: 'space-between', flex: 1}}>
           <Textinput
             placeholder="Email"
             value={email}
@@ -45,8 +98,13 @@ const Registration = ({navigation}: any) => {
             secureTextEntry={true}
           />
         </View>
-        <View style={{flex: 1, justifyContent: 'center'}}>
-          <Button type="primary" size="large" title="SIGN UP" />
+        <View style={{flex: 1, justifyContent: 'flex-end'}}>
+          <Button
+            type="primary"
+            size="large"
+            title="SIGN UP"
+            onPress={handleOnSubmit}
+          />
           <TouchableOpacity onPress={() => navigation.replace('Login')}>
             <Text
               style={{
@@ -59,7 +117,16 @@ const Registration = ({navigation}: any) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+        <ModalCustom
+          children={<View />}
+          titleButton="OK"
+          title={titleModal}
+          actionOnPress={() => {
+            setIsModalVisible(false);
+          }}
+          isModalVisible={isModalVisible}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -73,7 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   contentContainer: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: color.white,
     marginVertical: 20,
     marginHorizontal: 20,
